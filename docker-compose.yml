@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: "venus/beeple"
+    ports:
+      - "8080:8080"
+  venus-mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=pass
+      - MYSQL_DATABASE=venus
+      - MYSQL_USER=venus
+      - MYSQL_PASSWORD=venus
+    ports:
+      - 3306:3306
