@@ -1,14 +1,17 @@
 version: '3'
 
 services:
-  backend:
+  vega-spring-backend:
     build:
       context: ./
       dockerfile: ./Dockerfile
     image: "venus/beeple"
+    networks:
+      - vega-spring-backend-net
+      - vega-spring-mysql-net
     ports:
       - "8080:8080"
-  venus-mysql:
+  vega-spring-mysql:
     image: mysql:latest
     environment:
       - MYSQL_ROOT_PASSWORD=root
@@ -16,5 +19,14 @@ services:
       - MYSQL_DATABASE=venus
       - MYSQL_USER=venus
       - MYSQL_PASSWORD=venus
+    networks:
+      - vega-spring-mysql-net
     ports:
       - 3306:3306
+networks:
+  vega-spring-backend-net:
+    driver: bridge
+    name: "vega-spring-backend-net"
+  vega-spring-mysql-net:
+    driver: bridge
+    name: "vega-spring-mysql-net"
