@@ -36,6 +36,7 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
+          latest
           $(tag)
     - task: Maven@3
       inputs:
