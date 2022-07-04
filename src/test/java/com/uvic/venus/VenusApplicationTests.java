@@ -2,12 +2,11 @@ package com.uvic.venus;
 
 import com.uvic.venus.model.RegisterUserInfo;
 import com.uvic.venus.model.SecretInfo;
-import com.uvic.venus.model.UserInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
+import java.io.File;
 import java.util.Date;
 
 @SpringBootTest
@@ -56,5 +55,11 @@ class VenusApplicationTests {
 		secret.setDateCreated(now);
 		assertTrue(secret.getDateCreated() == now);
 		System.out.println(now);
+	}
+
+	@Test
+	void CreatingNewSecret5(){
+		SecretInfo secret = new SecretInfo("test1", "This is a secret");
+		assertTrue(secret.getFile() == null);
 	}
 }

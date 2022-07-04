@@ -5,8 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name="secretinfo")
@@ -22,30 +22,27 @@ public class SecretInfo {
          */
         @Id
         private String secretName;
-        private int secretID;   //need to change type to something else (currently int)
-                                //secretID should be generated??
-        private String content; //need to change type!!!
-        private File file;
+        private UUID secretID;
+        private String content;
         private Date created;
-        private String owner;
-
+        private Date lastUpdated;
+        private String owner;   //Need to change type and combine with co-owners
+        private File file;
 
         public SecretInfo(String secretName, String content) {
             this.secretName = secretName;
-            //this.secretID = secretID;
             this.content = content;
-            //this.created = created;
+            this.created = created;
             //this.owner = owner;
+            generateSecretID();
         }
 
         public SecretInfo() {
         }
 
         public void generateSecretID(){
-            /*
-                do something...
-                getSecretID(id);
-             */
+            UUID ID = UUID.randomUUID();
+            setSecretID(ID);
         }
 
         public String getSecretName() {
@@ -56,11 +53,11 @@ public class SecretInfo {
             this.secretName = secretName;
         }
 
-        public int getSecretID() {
+        public UUID getSecretID() {
             return secretID;
         }
 
-        public void setSecretID(int secretID) {
+        public void setSecretID(UUID secretID) {
             this.secretID = secretID;
         }
 
@@ -80,12 +77,27 @@ public class SecretInfo {
             this.file = file;
         }
 
+        public boolean fileExists(){
+            if (getFile() != null)
+                return true;
+            else
+                return false;
+        }
+
         public Date getDateCreated(){
             return created;
         }
 
         public void setDateCreated(Date created){
             this.created = created;
+        }
+
+        public Date getDateUpdated(){
+           return lastUpdated;
+         }
+
+        public void setDateUpdated(Date lastUpdated){
+            this.lastUpdated = lastUpdated;
         }
 
         public String getSecretOwner(){
