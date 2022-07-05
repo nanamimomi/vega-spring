@@ -2,27 +2,15 @@ package com.uvic.venus.controller;
 
 
 import com.uvic.venus.model.SecretInfo;
-import com.uvic.venus.model.UserInfo;
+import com.uvic.venus.model.CreateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
-import com.uvic.venus.repository.UserRepository;
-import com.uvic.venus.storage.StorageService;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.config.RepositoryNameSpaceHandler;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 
-import javax.sql.DataSource;
-import java.io.File;
 import java.util.List;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -66,10 +54,8 @@ public class VaultController {
         create a new secret
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResponseEntity<?> createNewSecret(@RequestParam String name, @RequestParam String content, @RequestParam File file){
-        SecretInfo secret = new SecretInfo(name,content);
-        if (file != null)
-            secret.setFile(file);
+    public ResponseEntity<?> createNewSecret(@RequestBody CreateSecretRequest createSecretRequest){
+        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText());
 
         Date now = new Date();
         secret.setDateCreated(now);
@@ -85,9 +71,8 @@ public class VaultController {
         update a secret
      */
     @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content, @RequestParam File file){
+    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
         SecretInfo newSecret = new SecretInfo(name, content);
-        newSecret.setFile(file);
         Date date = new Date();
         newSecret.setDateUpdated(date);
         newSecret.setDateCreated(secret.getDateCreated());
