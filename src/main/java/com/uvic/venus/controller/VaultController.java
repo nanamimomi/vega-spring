@@ -3,6 +3,7 @@ package com.uvic.venus.controller;
 
 import com.uvic.venus.model.SecretInfo;
 import com.uvic.venus.model.CreateSecretRequest;
+import com.uvic.venus.model.UpdateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -70,18 +72,22 @@ public class VaultController {
     /*
         update a secret
      */
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
-        SecretInfo newSecret = new SecretInfo(name, content);
-        Date date = new Date();
-        newSecret.setDateUpdated(date);
-        newSecret.setDateCreated(secret.getDateCreated());
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public ResponseEntity<?> updateSecret(@RequestBody UpdateSecretRequest updateSecretRequest){
+        Optional<SecretInfo> optionalSecret = secretInfoDAO.findById(updateSecretRequest.getUuid());
+        if(optionalSecret.isPresent()) {
+            SecretInfo secret = optionalSecret.get();
+            Date now = new Date();
+            secret.setDateUpdated(now);
+            secret.setSecretName(updateSecretRequest.getName());
+            secret.setContent(updateSecretRequest.getText());
 
-        //Storing a new secret and deleting the old one
-        secretInfoDAO.save(newSecret);
-        secretInfoDAO.deleteById(secret.getSecretID());
+            //Storing a new secret and deleting the old one
+            secretInfoDAO.save(secret);
 
-        return ResponseEntity.ok("Secret " + name + " has been updated.");
+            return ResponseEntity.ok("Secret " + secret.getSecretID() + " has been updated.");
+        }
+        return ResponseEntity.badRequest().body("Secret " + updateSecretRequest.getUuid() + " does not exist");
     }
     /*
         Delete a secret
