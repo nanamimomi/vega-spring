@@ -88,19 +88,18 @@ public class VaultController {
         Delete a secret
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteSecret(@RequestParam String ID){
-        UUID uuid = UUID.fromString(ID);
+    public ResponseEntity<?> deleteSecret(@RequestParam UUID ID){
         //boolean status = true;
         try{
-            SecretInfo secret = secretInfoDAO.getById(uuid);
+            SecretInfo secret = secretInfoDAO.getById(ID);
         }
         catch (NullPointerException nullPointerException){
             System.out.println("Error code 404: ");
             return ResponseEntity.badRequest().body("File does not exist");
         }
-        SecretInfo secret = secretInfoDAO.getById(uuid);
+        SecretInfo secret = secretInfoDAO.getById(ID);
         String name = secret.getSecretName();
-        secretInfoDAO.deleteById(uuid);
+        secretInfoDAO.deleteById(ID);
         return ResponseEntity.ok("Secret " + name + " has been deleted.");
     }
 
