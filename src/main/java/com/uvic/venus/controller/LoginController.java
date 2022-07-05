@@ -1,10 +1,7 @@
 package com.uvic.venus.controller;
 
 import com.uvic.venus.auth.JwtUtil;
-import com.uvic.venus.model.AuthenticationRequest;
-import com.uvic.venus.model.AuthenticationResponse;
-import com.uvic.venus.model.RegisterUserInfo;
-import com.uvic.venus.model.UserInfo;
+import com.uvic.venus.model.*;
 import com.uvic.venus.repository.UserInfoDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.sql.DataSource;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
