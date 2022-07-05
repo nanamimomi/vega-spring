@@ -20,8 +20,8 @@ public class SecretInfo {
                 -DateCreated
                 -Owner
          */
-        @Id
         private String secretName;
+        @Id
         private UUID secretID;
         private String content;
         private Date created;
