@@ -3,7 +3,6 @@ package com.uvic.venus.controller;
 
 import com.uvic.venus.model.SecretInfo;
 import com.uvic.venus.model.CreateSecretRequest;
-import com.uvic.venus.model.EditSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,18 +70,18 @@ public class VaultController {
     /*
         update a secret
      */
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResponseEntity<?> updateSecret(@RequestBody EditSecretRequest req){
-        SecretInfo newSecret = new SecretInfo(req.getName(), req.getText());
+    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
+        SecretInfo newSecret = new SecretInfo(name, content);
         Date date = new Date();
         newSecret.setDateUpdated(date);
-        newSecret.setDateCreated(req.getSecret().getDateCreated());
+        newSecret.setDateCreated(secret.getDateCreated());
 
         //Storing a new secret and deleting the old one
         secretInfoDAO.save(newSecret);
-        secretInfoDAO.deleteById(req.getSecret().getSecretID());
+        secretInfoDAO.deleteById(secret.getSecretID());
 
-        return ResponseEntity.ok("Secret " + req.getName() + " has been updated.");
+        return ResponseEntity.ok("Secret " + name + " has been updated.");
     }
     /*
         Delete a secret
