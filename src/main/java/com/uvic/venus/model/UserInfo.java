@@ -16,6 +16,13 @@ public class UserInfo {
     private String firstname;
     private String lastname;
 
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+        name = "owns_secret",
+        joinColumns = { @JoinColumn(name = "username") },
+        inverseJoinColumns = { @JoinColumn(name = "secretID") }
+    )
+    Set<SecretInfo> secrets;
 
     public UserInfo(String username, String firstName, String lastName) {
         this.username = username;

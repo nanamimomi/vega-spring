@@ -26,8 +26,10 @@ public class SecretInfo {
         private String content;
         private Date created;
         private Date lastUpdated;
-        private String owner;   //Need to change type and combine with co-owners
         private File file;
+
+        @ManyToMany(mappedBy = "secrets")
+        Set<UserInfo> owners;
 
         public SecretInfo(String secretName, String content) {
             this.secretName = secretName;
