@@ -5,11 +5,14 @@ import com.uvic.venus.model.SecretInfo;
 import com.uvic.venus.model.CreateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
+
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Date;
 import java.util.UUID;
@@ -57,11 +60,12 @@ public class VaultController {
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<?> createNewSecret(@RequestBody CreateSecretRequest createSecretRequest){
-        // Set<UserInfo> owners = new HashSet<>(userInfoDAO.findByUsername(createSecretRequest.getOwner()));
         System.out.println(userInfoDAO.findById(createSecretRequest.getOwner()));
-        System.out.println(userInfoDAO.findAll());
+        Optional<UserInfo> owners = userInfoDAO.findById(createSecretRequest.getOwner());
+        Set<UserInfo> owner = new HashSet<UserInfo>();
+        owner.add(owners.get());
         Date now = new Date();
-        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now);
+        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now, owner);
         /*
             maybe print out the secret for users to confirm the correct info
          */
@@ -73,38 +77,38 @@ public class VaultController {
     // /*
     //     update a secret
     //  */
-    // @RequestMapping(value = "/update", method = RequestMethod.GET)
-    // public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
-    //     SecretInfo newSecret = new SecretInfo(name, content);
-    //     Date date = new Date();
-    //     newSecret.setDateUpdated(date);
-    //     newSecret.setDateCreated(secret.getDateCreated());
+    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
+        SecretInfo newSecret = new SecretInfo(name, content, secret.getDateCreated(), secret.getSecretOwner());
+        Date date = new Date();
+        newSecret.setDateUpdated(date);
 
-    //     //Storing a new secret and deleting the old one
-    //     secretInfoDAO.save(newSecret);
-    //     secretInfoDAO.deleteById(secret.getSecretID());
+        //Storing a new secret and deleting the old one
+        secretInfoDAO.save(newSecret);
+        secretInfoDAO.deleteById(secret.getSecretID());
 
-    //     return ResponseEntity.ok("Secret " + name + " has been updated.");
-    // }
-    // /*
-    //     Delete a secret
-    //  */
-    // @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    // public ResponseEntity<?> deleteSecret(@RequestParam String ID){
-    //     UUID uuid = UUID.fromString(ID);
-    //     //boolean status = true;
-    //     try{
-    //         SecretInfo secret = secretInfoDAO.getById(uuid);
-    //     }
-    //     catch (NullPointerException nullPointerException){
-    //         System.out.println("Error code 404: ");
-    //         return ResponseEntity.badRequest().body("File does not exist");
-    //     }
-    //     SecretInfo secret = secretInfoDAO.getById(uuid);
-    //     String name = secret.getSecretName();
-    //     secretInfoDAO.deleteById(uuid);
-    //     return ResponseEntity.ok("Secret " + name + " has been deleted.");
-    // }
+        System.out.println(secret);
+
+        return ResponseEntity.ok("Secret " + name + " has been updated.");
+    }
+
+    /*
+        Delete a secret
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteSecret(@RequestParam String ID){
+        UUID uuid = UUID.fromString(ID);
+        try{
+            SecretInfo secret = secretInfoDAO.getById(uuid);
+            String name = secret.getSecretName();
+            secretInfoDAO.deleteById(uuid);
+            return ResponseEntity.ok("Secret " + name + " has been deleted.");
+        }
+        catch (NullPointerException nullPointerException){
+            System.out.println("Error code 404: ");
+            return ResponseEntity.badRequest().body("File does not exist");
+        }
+    }
 
 
 

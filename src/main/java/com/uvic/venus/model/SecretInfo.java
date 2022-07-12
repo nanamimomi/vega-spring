@@ -34,11 +34,11 @@ public class SecretInfo {
         @ManyToMany(mappedBy = "secrets")
         Set<UserInfo> owners;
 
-        // public SecretInfo(String secretName, String content, Date created, Set<UserInfo> owners) {
-        public SecretInfo(String secretName, String content, Date created) {
+        public SecretInfo(String secretName, String content, Date created, Set<UserInfo> owners) {
             this.secretName = secretName;
             this.content = content;
             this.created = created;
+            this.owners = owners;
             generateSecretID();
         }
 
