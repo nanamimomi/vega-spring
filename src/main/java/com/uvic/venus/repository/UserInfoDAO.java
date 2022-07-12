@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface UserInfoDAO extends JpaRepository<UserInfo, String> {
-    List<UserInfo> findByUsername(String username);
+    // List<UserInfo> findByUsername(String username);
 }

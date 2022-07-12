@@ -57,10 +57,11 @@ public class VaultController {
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<?> createNewSecret(@RequestBody CreateSecretRequest createSecretRequest){
-        Set<UserInfo> owners = new HashSet<>(userInfoDAO.findByUsername(createSecretRequest.getOwner()));
-        System.out.println(owners);
+        // Set<UserInfo> owners = new HashSet<>(userInfoDAO.findByUsername(createSecretRequest.getOwner()));
+        System.out.println(userInfoDAO.findById(createSecretRequest.getOwner()));
+        System.out.println(userInfoDAO.findAll());
         Date now = new Date();
-        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now, owners);
+        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now);
         /*
             maybe print out the secret for users to confirm the correct info
          */
