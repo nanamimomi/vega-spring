@@ -3,6 +3,7 @@ package com.uvic.venus.controller;
 import com.uvic.venus.model.UserInfo;
 import com.uvic.venus.model.SecretInfo;
 import com.uvic.venus.model.CreateSecretRequest;
+import com.uvic.venus.model.UpdateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
 
@@ -60,7 +61,6 @@ public class VaultController {
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<?> createNewSecret(@RequestBody CreateSecretRequest createSecretRequest){
-        System.out.println(userInfoDAO.findById(createSecretRequest.getOwner()));
         Optional<UserInfo> owners = userInfoDAO.findById(createSecretRequest.getOwner());
         Set<UserInfo> owner = new HashSet<UserInfo>();
         owner.add(owners.get());
@@ -74,22 +74,28 @@ public class VaultController {
         return ResponseEntity.ok(secret);
     }
 
-    // /*
-    //     update a secret
-    //  */
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
-        SecretInfo newSecret = new SecretInfo(name, content, secret.getDateCreated(), secret.getSecretOwner());
-        Date date = new Date();
-        newSecret.setDateUpdated(date);
+    /*
+        update a secret
+     */
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public ResponseEntity<?> updateSecret(@RequestBody UpdateSecretRequest updateSecretRequest){
+        Optional<SecretInfo> optionalSecret = secretInfoDAO.findById(updateSecretRequest.getUuid());
+        if(optionalSecret.isPresent()) {
+            System.out.println("=================UPDATE===================");
+            SecretInfo secret = optionalSecret.get();
+            System.out.println(secretInfoDAO.findAll());
+            Date now = new Date();
+            secret.setDateUpdated(now);
+            secret.setSecretName(updateSecretRequest.getName());
+            secret.setContent(updateSecretRequest.getText());
 
-        //Storing a new secret and deleting the old one
-        secretInfoDAO.save(newSecret);
-        secretInfoDAO.deleteById(secret.getSecretID());
+            //Storing a new secret
+            secretInfoDAO.save(secret);
+            System.out.print(secret);
 
-        System.out.println(secret);
-
-        return ResponseEntity.ok("Secret " + name + " has been updated.");
+            return ResponseEntity.ok("Secret " + secret.getSecretID() + " has been updated.");
+        }
+        return ResponseEntity.badRequest().body("Secret " + updateSecretRequest.getUuid() + " does not exist");
     }
 
     /*

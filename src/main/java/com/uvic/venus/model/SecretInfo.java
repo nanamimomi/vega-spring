@@ -105,11 +105,11 @@ public class SecretInfo {
             this.lastUpdated = lastUpdated;
         }
 
-        public Set<UserInfo> getSecretOwner(){
+        public Set<UserInfo> getOwners(){
             return owners;
         }
 
-        public void setSecretOwner(Set<UserInfo> owners) {
+        public void setOwners(Set<UserInfo> owners) {
             this.owners = owners;
         }
 

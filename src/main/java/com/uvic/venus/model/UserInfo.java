@@ -57,12 +57,17 @@ public class UserInfo {
 
     public void setUsername(String username) { this.username = username;  }
 
+    public Set<SecretInfo> getSecrets() { return secrets; }
+
+    public void setSecrets(Set<SecretInfo> secrets) { this.secrets = secrets;  }
+
     @Override
     public String toString() {
         return "UserInfo{" +
                 "username='" + username + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", secrets='" + secrets + '\'' +
                 '}';
     }
 
