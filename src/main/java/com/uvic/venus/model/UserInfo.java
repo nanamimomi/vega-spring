@@ -1,9 +1,12 @@
 package com.uvic.venus.model;
 
-
-
+import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Set;
 import javax.persistence.Table;
 
 
@@ -18,7 +21,7 @@ public class UserInfo {
 
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
-        name = "owns_secret",
+        name = "owns_secrets",
         joinColumns = { @JoinColumn(name = "username") },
         inverseJoinColumns = { @JoinColumn(name = "secretID") }
     )
