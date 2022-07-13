@@ -25,7 +25,7 @@ public class UserInfo {
         joinColumns = { @JoinColumn(name = "username") },
         inverseJoinColumns = { @JoinColumn(name = "secretID") }
     )
-    Set<SecretInfo> secrets;
+    private Set<SecretInfo> secrets;
 
     public UserInfo(String username, String firstName, String lastName) {
         this.username = username;

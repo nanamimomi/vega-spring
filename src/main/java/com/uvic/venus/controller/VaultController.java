@@ -70,7 +70,7 @@ public class VaultController {
             maybe print out the secret for users to confirm the correct info
          */
         secretInfoDAO.save(secret);
-        System.out.println(secret);
+        System.out.println(secretInfoDAO.findAll());
         return ResponseEntity.ok(secret);
     }
 
@@ -79,11 +79,11 @@ public class VaultController {
      */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ResponseEntity<?> updateSecret(@RequestBody UpdateSecretRequest updateSecretRequest){
+        System.out.println(secretInfoDAO.findAll());
         Optional<SecretInfo> optionalSecret = secretInfoDAO.findById(updateSecretRequest.getUuid());
         if(optionalSecret.isPresent()) {
             System.out.println("=================UPDATE===================");
             SecretInfo secret = optionalSecret.get();
-            System.out.println(secretInfoDAO.findAll());
             Date now = new Date();
             secret.setDateUpdated(now);
             secret.setSecretName(updateSecretRequest.getName());

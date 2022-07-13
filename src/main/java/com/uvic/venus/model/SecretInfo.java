@@ -32,7 +32,7 @@ public class SecretInfo {
         private File file;
 
         @ManyToMany(mappedBy = "secrets")
-        Set<UserInfo> owners;
+        private Set<UserInfo> owners;
 
         public SecretInfo(String secretName, String content, Date created, Set<UserInfo> owners) {
             this.secretName = secretName;
