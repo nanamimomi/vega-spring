@@ -7,17 +7,14 @@ import com.uvic.venus.model.UpdateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
 
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Date;
 import java.util.UUID;
-import java.util.HashSet;
 
 @RestController
 @RequestMapping("/secrets")
@@ -52,25 +49,26 @@ public class VaultController {
         list out all the secrets owned (and shared with) by the users
      */
     @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public ResponseEntity<?> listAllSecrets(){
-        List<SecretInfo> secretInfoList = secretInfoDAO.findAll();
-        return ResponseEntity.ok(secretInfoList);
+    public ResponseEntity<?> listAllSecrets(@RequestParam String username){
+        UserInfo user = userInfoDAO.getById(username);
+        return ResponseEntity.ok(user.getSecrets());
     }
     /*
         create a new secret
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<?> createNewSecret(@RequestBody CreateSecretRequest createSecretRequest){
-        Optional<UserInfo> owners = userInfoDAO.findById(createSecretRequest.getOwner());
-        Set<UserInfo> owner = new HashSet<UserInfo>();
-        owner.add(owners.get());
+        UserInfo owner = userInfoDAO.findById(createSecretRequest.getOwner()).get();
         Date now = new Date();
-        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now, owner);
+        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now);
         /*
             maybe print out the secret for users to confirm the correct info
          */
         secretInfoDAO.save(secret);
+        owner.getSecrets().add(secret);
+        userInfoDAO.save(owner);
         System.out.println(secretInfoDAO.findAll());
+        System.out.println(userInfoDAO.findAll());
         return ResponseEntity.ok(secret);
     }
 
@@ -79,10 +77,8 @@ public class VaultController {
      */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ResponseEntity<?> updateSecret(@RequestBody UpdateSecretRequest updateSecretRequest){
-        System.out.println(secretInfoDAO.findAll());
         Optional<SecretInfo> optionalSecret = secretInfoDAO.findById(updateSecretRequest.getUuid());
         if(optionalSecret.isPresent()) {
-            System.out.println("=================UPDATE===================");
             SecretInfo secret = optionalSecret.get();
             Date now = new Date();
             secret.setDateUpdated(now);
@@ -91,7 +87,6 @@ public class VaultController {
 
             //Storing a new secret
             secretInfoDAO.save(secret);
-            System.out.print(secret);
 
             return ResponseEntity.ok("Secret " + secret.getSecretID() + " has been updated.");
         }

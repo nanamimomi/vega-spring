@@ -6,6 +6,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Table;
 
@@ -22,10 +24,10 @@ public class UserInfo {
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
         name = "owns_secrets",
-        joinColumns = { @JoinColumn(name = "username") },
-        inverseJoinColumns = { @JoinColumn(name = "secretID") }
+        joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "username") },
+        inverseJoinColumns = { @JoinColumn(name = "secret_id", referencedColumnName = "") }
     )
-    private Set<SecretInfo> secrets;
+    private Set<SecretInfo> secrets  = new HashSet<SecretInfo>();
 
     public UserInfo(String username, String firstName, String lastName) {
         this.username = username;

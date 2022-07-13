@@ -3,8 +3,6 @@ package com.uvic.venus.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.ManyToMany;
-import java.util.Set;
 
 import java.io.File;
 import java.util.Date;
@@ -31,14 +29,10 @@ public class SecretInfo {
         private Date lastUpdated;
         private File file;
 
-        @ManyToMany(mappedBy = "secrets")
-        private Set<UserInfo> owners;
-
-        public SecretInfo(String secretName, String content, Date created, Set<UserInfo> owners) {
+        public SecretInfo(String secretName, String content, Date created) {
             this.secretName = secretName;
             this.content = content;
             this.created = created;
-            this.owners = owners;
             generateSecretID();
         }
 
@@ -105,20 +99,11 @@ public class SecretInfo {
             this.lastUpdated = lastUpdated;
         }
 
-        public Set<UserInfo> getOwners(){
-            return owners;
-        }
-
-        public void setOwners(Set<UserInfo> owners) {
-            this.owners = owners;
-        }
-
         @Override
         public String toString() {
             return "SecretInfo{" +
                     "  Name='" + secretName + '\'' +
                     ", Date Created='" + created + '\'' +
-                    ", Owner='" + owners + '\'' +
                     '}';
         }
 
