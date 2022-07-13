@@ -97,9 +97,13 @@ public class VaultController {
         Delete a secret
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteSecret(@RequestParam String ID){
-        UUID uuid = UUID.fromString(ID);
+    public ResponseEntity<?> deleteSecret(@RequestParam String ID, @RequestParam String username){
         try{
+            System.out.println(ID);
+            System.out.println(username);
+            UUID uuid = UUID.fromString(ID);
+            UserInfo user = userInfoDAO.getById(username);
+            System.out.println(user);
             SecretInfo secret = secretInfoDAO.getById(uuid);
             String name = secret.getSecretName();
             secretInfoDAO.deleteById(uuid);
@@ -108,6 +112,10 @@ public class VaultController {
         catch (NullPointerException nullPointerException){
             System.out.println("Error code 404: ");
             return ResponseEntity.badRequest().body("File does not exist");
+        }catch(Exception e){
+            System.out.println("Error code 404: ");
+            System.out.println(e);
+            return ResponseEntity.badRequest().body(e);
         }
     }
 
