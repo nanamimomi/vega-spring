@@ -67,8 +67,6 @@ public class VaultController {
         secretInfoDAO.save(secret);
         owner.getSecrets().add(secret);
         userInfoDAO.save(owner);
-        System.out.println(secretInfoDAO.findAll());
-        System.out.println(userInfoDAO.findAll());
         return ResponseEntity.ok(secret);
     }
 
@@ -99,13 +97,11 @@ public class VaultController {
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteSecret(@RequestParam String ID, @RequestParam String username){
         try{
-            System.out.println(ID);
-            System.out.println(username);
             UUID uuid = UUID.fromString(ID);
             UserInfo user = userInfoDAO.getById(username);
-            System.out.println(user);
             SecretInfo secret = secretInfoDAO.getById(uuid);
             String name = secret.getSecretName();
+            user.getSecrets().remove(secret);
             secretInfoDAO.deleteById(uuid);
             return ResponseEntity.ok("Secret " + name + " has been deleted.");
         }
