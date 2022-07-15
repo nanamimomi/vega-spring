@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
 import java.util.Date;
 
 @SpringBootTest
@@ -31,35 +30,28 @@ class VenusApplicationTests {
 
 	@Test
 	void CreatingNewSecret1(){
-		SecretInfo secret = new SecretInfo("test1", "This is a secret");
+		SecretInfo secret = new SecretInfo("test1", "This is a secret", new Date());
 		assertTrue(secret.getSecretName() == "test1");
 	}
 
 	@Test
 	void CreatingNewSecret2(){
-		SecretInfo secret = new SecretInfo("test1", "This is a secret");
+		SecretInfo secret = new SecretInfo("test1", "This is a secret", new Date());
 		assertTrue(secret.getContent() == "This is a secret");
 
 	}
 	@Test
 	void CreatingNewSecret3(){
-		SecretInfo secret = new SecretInfo("test1", "This is a secret");
-		secret.setSecretOwner("ABC");
-		assertTrue(secret.getSecretOwner() == "ABC");
-
-	}
-	@Test
-	void CreatingNewSecret4(){
 		Date now = new Date();
-		SecretInfo secret = new SecretInfo("test1", "This is a secret");
+		SecretInfo secret = new SecretInfo("test1", "This is a secret", new Date());
 		secret.setDateCreated(now);
 		assertTrue(secret.getDateCreated() == now);
 		System.out.println(now);
 	}
 
 	@Test
-	void CreatingNewSecret5(){
-		SecretInfo secret = new SecretInfo("test1", "This is a secret");
+	void CreatingNewSecret4(){
+		SecretInfo secret = new SecretInfo("test1", "This is a secret", new Date());
 		assertTrue(secret.getFile() == null);
 	}
 }
