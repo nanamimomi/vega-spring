@@ -2,6 +2,7 @@ package com.uvic.venus.controller;
 
 import com.uvic.venus.model.UserInfo;
 import com.uvic.venus.model.SecretInfo;
+import com.uvic.venus.model.ViewAllSecretRequest;
 import com.uvic.venus.model.CreateSecretRequest;
 import com.uvic.venus.model.UpdateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
@@ -10,6 +11,8 @@ import com.uvic.venus.repository.UserInfoDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,9 +51,9 @@ public class VaultController {
     /*
         list out all the secrets owned (and shared with) by the users
      */
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public ResponseEntity<?> listAllSecrets(@RequestParam String username){
-        UserInfo user = userInfoDAO.getById(username);
+    @RequestMapping(value = "/all", method = RequestMethod.POST)
+    public ResponseEntity<?> listAllSecrets(@RequestBody ViewAllSecretRequest viewAllSecretRequest){
+        UserInfo user = userInfoDAO.getById(viewAllSecretRequest.getOwner());
         return ResponseEntity.ok(user.getSecrets());
     }
     /*
