@@ -18,6 +18,7 @@ public class SecretInfo {
                 -content
                 -Addition files
                 -DateCreated
+           
                 -Owner
          */
         private String secretName;
@@ -26,14 +27,12 @@ public class SecretInfo {
         private String content;
         private Date created;
         private Date lastUpdated;
-        private String owner;   //Need to change type and combine with co-owners
         private File file;
 
-        public SecretInfo(String secretName, String content) {
+        public SecretInfo(String secretName, String content, Date created) {
             this.secretName = secretName;
             this.content = content;
             this.created = created;
-            //this.owner = owner;
             generateSecretID();
         }
 
@@ -100,20 +99,11 @@ public class SecretInfo {
             this.lastUpdated = lastUpdated;
         }
 
-        public String getSecretOwner(){
-            return this.owner;
-        }
-
-        public void setSecretOwner(String owner) {
-            this.owner = owner;
-        }
-
         @Override
         public String toString() {
             return "SecretInfo{" +
                     "  Name='" + secretName + '\'' +
                     ", Date Created='" + created + '\'' +
-                    ", Owner='" + owner + '\'' +
                     '}';
         }
 

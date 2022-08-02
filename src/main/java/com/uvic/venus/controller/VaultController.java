@@ -1,15 +1,21 @@
 package com.uvic.venus.controller;
 
-
+import com.uvic.venus.model.UserInfo;
 import com.uvic.venus.model.SecretInfo;
+import com.uvic.venus.model.ViewAllSecretRequest;
 import com.uvic.venus.model.CreateSecretRequest;
+import com.uvic.venus.model.UpdateSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.Date;
 import java.util.UUID;
 
@@ -45,63 +51,73 @@ public class VaultController {
     /*
         list out all the secrets owned (and shared with) by the users
      */
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public ResponseEntity<?> listAllSecrets(){
-        List<SecretInfo> secretInfoList = secretInfoDAO.findAll();
-        return ResponseEntity.ok(secretInfoList);
+    @RequestMapping(value = "/all", method = RequestMethod.POST)
+    public ResponseEntity<?> listAllSecrets(@RequestBody ViewAllSecretRequest viewAllSecretRequest){
+        UserInfo user = userInfoDAO.getById(viewAllSecretRequest.getOwner());
+        return ResponseEntity.ok(user.getSecrets());
     }
     /*
         create a new secret
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<?> createNewSecret(@RequestBody CreateSecretRequest createSecretRequest){
-        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText());
-
+        UserInfo owner = userInfoDAO.findById(createSecretRequest.getOwner()).get();
         Date now = new Date();
-        secret.setDateCreated(now);
+        SecretInfo secret = new SecretInfo(createSecretRequest.getName(), createSecretRequest.getText(), now);
         /*
             maybe print out the secret for users to confirm the correct info
          */
         secretInfoDAO.save(secret);
-        System.out.println(secret);
+        owner.getSecrets().add(secret);
+        userInfoDAO.save(owner);
         return ResponseEntity.ok(secret);
     }
 
     /*
         update a secret
      */
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ResponseEntity<?> updateSecret(SecretInfo secret, @RequestParam String name, @RequestParam String content){
-        SecretInfo newSecret = new SecretInfo(name, content);
-        Date date = new Date();
-        newSecret.setDateUpdated(date);
-        newSecret.setDateCreated(secret.getDateCreated());
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public ResponseEntity<?> updateSecret(@RequestBody UpdateSecretRequest updateSecretRequest){
+        Optional<SecretInfo> optionalSecret = secretInfoDAO.findById(updateSecretRequest.getUuid());
+        if(optionalSecret.isPresent()) {
+            SecretInfo secret = optionalSecret.get();
+            Date now = new Date();
+            secret.setDateUpdated(now);
+            secret.setSecretName(updateSecretRequest.getName());
+            secret.setContent(updateSecretRequest.getText());
 
-        //Storing a new secret and deleting the old one
-        secretInfoDAO.save(newSecret);
-        secretInfoDAO.deleteById(secret.getSecretID());
+            //Storing a new secret
+            secretInfoDAO.save(secret);
 
-        return ResponseEntity.ok("Secret " + name + " has been updated.");
+            return ResponseEntity.ok("Secret " + secret.getSecretID() + " has been updated.");
+        }
+        return ResponseEntity.badRequest().body("Secret " + updateSecretRequest.getUuid() + " does not exist");
     }
+
     /*
         Delete a secret
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteSecret(@RequestParam String ID){
-        UUID uuid = UUID.fromString(ID);
-        //boolean status = true;
+    public ResponseEntity<?> deleteSecret(@RequestParam String ID, @RequestParam String username){
         try{
+            UUID uuid = UUID.fromString(ID);
+            UserInfo user = userInfoDAO.getById(username);
             SecretInfo secret = secretInfoDAO.getById(uuid);
+            String name = secret.getSecretName();
+            user.getSecrets().remove(secret);
+            secretInfoDAO.deleteById(uuid);
+            return ResponseEntity.ok("Secret " + name + " has been deleted.");
         }
         catch (NullPointerException nullPointerException){
             System.out.println("Error code 404: ");
             return ResponseEntity.badRequest().body("File does not exist");
+        }catch(Exception e){
+            System.out.println("Error code 404: ");
+            System.out.println(e);
+            return ResponseEntity.badRequest().body(e);
         }
-        SecretInfo secret = secretInfoDAO.getById(uuid);
-        String name = secret.getSecretName();
-        secretInfoDAO.deleteById(uuid);
-        return ResponseEntity.ok("Secret " + name + " has been deleted.");
     }
+
 
 
 }

@@ -1,14 +1,16 @@
 package com.uvic.venus.model;
 
-public class CreateSecretRequest {
+import java.util.UUID;
+
+public class UpdateSecretRequest {
     private String name;
     private String text;
-    private String owner;
+    private UUID uuid;
 
-    public CreateSecretRequest(String name, String text, String owner) {
+    public UpdateSecretRequest(String name, String text, UUID uuid) {
         this.name = name;
         this.text = text;
-        this.owner = owner;
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -27,11 +29,11 @@ public class CreateSecretRequest {
         this.text = text;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public String getOwner() {
-        return owner;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }
