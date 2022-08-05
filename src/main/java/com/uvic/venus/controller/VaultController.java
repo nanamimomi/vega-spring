@@ -2,8 +2,10 @@ package com.uvic.venus.controller;
 
 import com.uvic.venus.model.UserInfo;
 import com.uvic.venus.model.SecretInfo;
+import com.uvic.venus.model.ViewAllSecretRequest;
 import com.uvic.venus.model.CreateSecretRequest;
 import com.uvic.venus.model.UpdateSecretRequest;
+import com.uvic.venus.model.DeleteSecretRequest;
 import com.uvic.venus.repository.SecretInfoDAO;
 import com.uvic.venus.repository.UserInfoDAO;
 
@@ -48,9 +50,9 @@ public class VaultController {
     /*
         list out all the secrets owned (and shared with) by the users
      */
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public ResponseEntity<?> listAllSecrets(@RequestParam String username){
-        UserInfo user = userInfoDAO.getById(username);
+    @RequestMapping(value = "/all", method = RequestMethod.POST)
+    public ResponseEntity<?> listAllSecrets(@RequestBody ViewAllSecretRequest viewAllSecretRequest){
+        UserInfo user = userInfoDAO.getById(viewAllSecretRequest.getOwner());
         return ResponseEntity.ok(user.getSecrets());
     }
     /*
@@ -94,11 +96,11 @@ public class VaultController {
     /*
         Delete a secret
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteSecret(@RequestParam String ID, @RequestParam String username){
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public ResponseEntity<?> deleteSecret(@RequestBody DeleteSecretRequest deleteSecretRequest){
         try{
-            UUID uuid = UUID.fromString(ID);
-            UserInfo user = userInfoDAO.getById(username);
+            UUID uuid = UUID.fromString(deleteSecretRequest.getID());
+            UserInfo user = userInfoDAO.getById(deleteSecretRequest.getOwner());
             SecretInfo secret = secretInfoDAO.getById(uuid);
             String name = secret.getSecretName();
             user.getSecrets().remove(secret);
@@ -106,11 +108,8 @@ public class VaultController {
             return ResponseEntity.ok("Secret " + name + " has been deleted.");
         }
         catch (NullPointerException nullPointerException){
-            System.out.println("Error code 404: ");
             return ResponseEntity.badRequest().body("File does not exist");
         }catch(Exception e){
-            System.out.println("Error code 404: ");
-            System.out.println(e);
             return ResponseEntity.badRequest().body(e);
         }
     }
