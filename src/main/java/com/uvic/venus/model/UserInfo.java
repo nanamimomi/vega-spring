@@ -1,9 +1,14 @@
 package com.uvic.venus.model;
 
-
-
+import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Table;
 
 
@@ -16,6 +21,13 @@ public class UserInfo {
     private String firstname;
     private String lastname;
 
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+        name = "owns_secrets",
+        joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "username") },
+        inverseJoinColumns = { @JoinColumn(name = "secret_id", referencedColumnName = "") }
+    )
+    private Set<SecretInfo> secrets  = new HashSet<SecretInfo>();
 
     public UserInfo(String username, String firstName, String lastName) {
         this.username = username;
@@ -47,12 +59,17 @@ public class UserInfo {
 
     public void setUsername(String username) { this.username = username;  }
 
+    public Set<SecretInfo> getSecrets() { return secrets; }
+
+    public void setSecrets(Set<SecretInfo> secrets) { this.secrets = secrets;  }
+
     @Override
     public String toString() {
         return "UserInfo{" +
                 "username='" + username + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", secrets='" + secrets + '\'' +
                 '}';
     }
 
